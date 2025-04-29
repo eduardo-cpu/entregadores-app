@@ -8,8 +8,22 @@ dotenv.config();
 
 const app = express();
 
+// Configuração do CORS para permitir apenas domínios específicos
+const corsOptions = {
+  origin: [
+    // Domínios do Vercel
+    'https://entregadores-app-espaula-ufsmbr-eduardos-projects-abf14777.vercel.app',
+    'https://entregadores-pv7swo0yw-eduardos-projects-abf14777.vercel.app',
+    // Localhost para desenvolvimento
+    'http://localhost:3000'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
