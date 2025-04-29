@@ -12,8 +12,11 @@ const app = express();
 const corsOptions = {
   origin: [
     // Domínios do Vercel
+    'https://entregadores-app.vercel.app',
     'https://entregadores-app-espaula-ufsmbr-eduardos-projects-abf14777.vercel.app',
     'https://entregadores-pv7swo0yw-eduardos-projects-abf14777.vercel.app',
+    'https://frontend-theta-orpin-86.vercel.app',
+    'https://frontend-cql73mr9l-eduardos-projects-abf14777.vercel.app',
     // Localhost para desenvolvimento
     'http://localhost:3000'
   ],
