@@ -1,0 +1,20 @@
+{
+  "name": "seguroentrega",
+  "version": "1.0.0",
+  "description": "Plataforma para Registro de Clientes Fraudulentos",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "install": "cd backend && npm install",
+    "build": "cd backend && npm install"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eduardo-cpu/entregadores-app.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
