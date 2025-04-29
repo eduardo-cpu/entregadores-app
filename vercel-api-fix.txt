@@ -1,0 +1,1 @@
+// Alterações para correção do erro 404 no Vercel
