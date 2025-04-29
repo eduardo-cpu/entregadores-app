@@ -12,3 +12,9 @@ services:
         value: 10000
       - key: MONGODB_URI
         sync: false
+    plan: free
+    autoDeploy: true
+    # A porta explícita que o serviço vai usar
+    envVars:
+      - key: PORT
+        value: 10000
