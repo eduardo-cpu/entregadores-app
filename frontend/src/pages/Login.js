@@ -9,6 +9,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
+  const [detalhesErro, setDetalhesErro] = useState('');
   const [carregando, setCarregando] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -22,17 +23,27 @@ const Login = () => {
     
     try {
       setErro('');
+      setDetalhesErro('');
       setCarregando(true);
       
+      console.log('Enviando requisição de login');
       const resultado = await login(email, senha);
+      console.log('Resultado do login:', resultado);
       
       if (resultado.sucesso) {
+        console.log('Login bem-sucedido, redirecionando...');
         navigate('/dashboard');
       } else {
+        console.log('Falha no login:', resultado.mensagem);
         setErro(resultado.mensagem || 'Falha ao fazer login');
+        if (resultado.detalhes) {
+          setDetalhesErro(`Detalhes técnicos: ${resultado.detalhes}`);
+        }
       }
     } catch (error) {
-      setErro('Erro ao fazer login. Por favor, tente novamente.');
+      console.error('Erro inesperado:', error);
+      setErro('Erro inesperado ao fazer login. Por favor, tente novamente.');
+      setDetalhesErro(error.message || 'Erro desconhecido');
     } finally {
       setCarregando(false);
     }
@@ -50,7 +61,17 @@ const Login = () => {
                 <p className="text-muted">Acesse sua conta para gerenciar seus registros</p>
               </div>
               
-              {erro && <Alert variant="danger">{erro}</Alert>}
+              {erro && (
+                <Alert variant="danger">
+                  {erro}
+                  {detalhesErro && (
+                    <div className="mt-2 small">
+                      <hr />
+                      {detalhesErro}
+                    </div>
+                  )}
+                </Alert>
+              )}
               
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formEmail">

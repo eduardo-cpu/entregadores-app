@@ -21,13 +21,18 @@ export const AuthProvider = ({ children }) => {
   
   const login = async (email, senha) => {
     try {
+      console.log('Tentando login com:', { email });
       const data = await authService.login(email, senha);
+      console.log('Resposta de login:', data);
       setEntregador(data.entregador);
       return { sucesso: true };
     } catch (error) {
+      console.error('Erro detalhado no login:', error);
+      // Exibe informações mais detalhadas sobre o erro
       return {
         sucesso: false,
-        mensagem: error.response?.data?.erro || 'Erro ao fazer login'
+        mensagem: error.response?.data?.erro || 'Erro ao fazer login. Verifique suas credenciais e tente novamente.',
+        detalhes: error.message
       };
     }
   };
@@ -38,9 +43,11 @@ export const AuthProvider = ({ children }) => {
       setEntregador(data.entregador);
       return { sucesso: true };
     } catch (error) {
+      console.error('Erro no registro:', error);
       return {
         sucesso: false,
-        mensagem: error.response?.data?.erro || 'Erro ao criar conta'
+        mensagem: error.response?.data?.erro || 'Erro ao criar conta',
+        detalhes: error.message
       };
     }
   };
