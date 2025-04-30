@@ -17,18 +17,30 @@ const corsOptions = {
     'https://entregadores-pv7swo0yw-eduardos-projects-abf14777.vercel.app',
     'https://frontend-theta-orpin-86.vercel.app',
     'https://frontend-cql73mr9l-eduardos-projects-abf14777.vercel.app',
+    'https://entregadores-555un4luu-eduardos-projects-abf14777.vercel.app', // Novo domínio do Vercel
+    // Permitir todos os subdomínios do seu projeto no Vercel para futuras implantações
+    /^https:\/\/entregadores-.*-eduardos-projects-abf14777\.vercel\.app$/,
     // Localhost para desenvolvimento
     'http://localhost:3000'
   ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Adicionado OPTIONS para dar suporte a preflight requests
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  maxAge: 86400 // Cache de preflight por 24 horas
 };
 
 // Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware para debug de solicitações CORS (somente em desenvolvimento)
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - Origin: ${req.headers.origin || 'N/A'}`);
+    next();
+  });
+}
 
 // Rota de teste
 app.get('/', (req, res) => {
