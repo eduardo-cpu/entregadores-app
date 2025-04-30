@@ -33,6 +33,7 @@ const auth = async (req, res, next) => {
     req.entregador = entregador;
     next();
   } catch (error) {
+    console.error('Erro na verificação do token:', error.message);
     return res.status(401).json({
       sucesso: false,
       erro: 'Token inválido'
@@ -45,12 +46,28 @@ const auth = async (req, res, next) => {
 // @access  Public
 router.post('/registro', async (req, res) => {
   try {
+    console.log('Tentativa de registro recebida:', { 
+      nome: req.body.nome, 
+      email: req.body.email, 
+      empresa: req.body.empresa 
+    });
+    
     const { nome, email, senha, empresa, telefone } = req.body;
     
+    if (!nome || !email || !senha || !empresa) {
+      console.log('Dados incompletos no registro');
+      return res.status(400).json({
+        sucesso: false,
+        erro: 'Dados incompletos. Preencha todos os campos obrigatórios.'
+      });
+    }
+    
     // Verificar se o email já existe
+    console.log('Verificando se o email já existe:', email);
     let entregador = await Entregador.findOne({ email });
     
     if (entregador) {
+      console.log('Email já cadastrado:', email);
       return res.status(400).json({
         sucesso: false,
         erro: 'Email já cadastrado'
@@ -58,6 +75,7 @@ router.post('/registro', async (req, res) => {
     }
     
     // Criar novo entregador
+    console.log('Criando novo entregador...');
     entregador = new Entregador({
       nome,
       email,
@@ -67,6 +85,7 @@ router.post('/registro', async (req, res) => {
     });
     
     await entregador.save();
+    console.log('Entregador salvo com sucesso');
     
     // Gerar token JWT
     const token = jwt.sign(
@@ -74,6 +93,7 @@ router.post('/registro', async (req, res) => {
       process.env.JWT_SECRET || 'entregadoresapp',
       { expiresIn: '30d' }
     );
+    console.log('Token gerado para o entregador:', entregador.id);
     
     res.status(201).json({
       sucesso: true,
@@ -86,10 +106,11 @@ router.post('/registro', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(error);
+    console.error('ERRO NO REGISTRO:', error.message);
+    console.error('Stack trace:', error.stack);
     res.status(500).json({
       sucesso: false,
-      erro: 'Erro no servidor'
+      erro: 'Erro no servidor: ' + error.message
     });
   }
 });
@@ -99,12 +120,26 @@ router.post('/registro', async (req, res) => {
 // @access  Public
 router.post('/login', async (req, res) => {
   try {
+    console.log('Tentativa de login recebida:', { 
+      email: req.body.email 
+    });
+    
     const { email, senha } = req.body;
     
+    if (!email || !senha) {
+      console.log('Dados incompletos no login');
+      return res.status(400).json({
+        sucesso: false,
+        erro: 'Email e senha são obrigatórios'
+      });
+    }
+    
     // Verificar se o email existe
+    console.log('Buscando entregador pelo email:', email);
     const entregador = await Entregador.findOne({ email }).select('+senha');
     
     if (!entregador) {
+      console.log('Entregador não encontrado para o email:', email);
       return res.status(401).json({
         sucesso: false,
         erro: 'Credenciais inválidas'
@@ -112,9 +147,11 @@ router.post('/login', async (req, res) => {
     }
     
     // Verificar senha
+    console.log('Verificando senha...');
     const senhaCorreta = await entregador.matchSenha(senha);
     
     if (!senhaCorreta) {
+      console.log('Senha incorreta para o email:', email);
       return res.status(401).json({
         sucesso: false,
         erro: 'Credenciais inválidas'
@@ -124,10 +161,11 @@ router.post('/login', async (req, res) => {
     // Gerar token JWT
     const token = jwt.sign(
       { id: entregador.id },
-      process.env.JWT_SECRET || 'entregadoresapp',
+      process.env.JWT_SECRET || 'entregadoresapp2025seguro',
       { expiresIn: '30d' }
     );
     
+    console.log('Login bem-sucedido para:', email);
     res.status(200).json({
       sucesso: true,
       token,
@@ -139,10 +177,11 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(error);
+    console.error('ERRO NO LOGIN:', error.message);
+    console.error('Stack trace:', error.stack);
     res.status(500).json({
       sucesso: false,
-      erro: 'Erro no servidor'
+      erro: 'Erro no servidor: ' + error.message
     });
   }
 });
