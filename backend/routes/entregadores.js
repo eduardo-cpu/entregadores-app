@@ -17,7 +17,7 @@ const auth = async (req, res, next) => {
     }
 
     // Verificar e decodificar o token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'entregadoresapp');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'entregadoresapp2025seguro');
     
     // Buscar o entregador pelo ID
     const entregador = await Entregador.findById(decoded.id);
@@ -90,7 +90,7 @@ router.post('/registro', async (req, res) => {
     // Gerar token JWT
     const token = jwt.sign(
       { id: entregador.id },
-      process.env.JWT_SECRET || 'entregadoresapp',
+      process.env.JWT_SECRET || 'entregadoresapp2025seguro',
       { expiresIn: '30d' }
     );
     console.log('Token gerado para o entregador:', entregador.id);
