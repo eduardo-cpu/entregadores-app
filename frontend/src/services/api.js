@@ -13,7 +13,7 @@ console.log('API URL Base:', isProduction ? PRODUCTION_API_URL : DEVELOPMENT_API
 
 // Configuração do cliente axios
 const api = axios.create({
-  baseURL: isProduction ? PRODUCTION_API_URL : DEVELOPMENT_API_URL,
+  baseURL: (isProduction ? PRODUCTION_API_URL : DEVELOPMENT_API_URL) + '/api',
   headers: {
     'Content-Type': 'application/json'
   },
@@ -65,8 +65,8 @@ export const authService = {
   login: async (email, senha) => {
     console.log('Iniciando requisição de login para:', email);
     try {
-      // Adicionando o prefixo /api para garantir que a rota esteja correta
-      const response = await api.post('/api/entregadores/login', { email, senha });
+      // Removendo o prefixo /api duplicado
+      const response = await api.post('/entregadores/login', { email, senha });
       console.log('Login bem-sucedido:', response.data);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
@@ -81,8 +81,8 @@ export const authService = {
   
   registro: async (entregadorData) => {
     try {
-      // Adicionando o prefixo /api para garantir que a rota esteja correta
-      const response = await api.post('/api/entregadores/registro', entregadorData);
+      // Removendo o prefixo /api duplicado
+      const response = await api.post('/entregadores/registro', entregadorData);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('entregador', JSON.stringify(response.data.entregador));
@@ -111,22 +111,22 @@ export const authService = {
 // Funções de clientes fraudulentos
 export const clienteService = {
   cadastrarCliente: async (clienteData) => {
-    const response = await api.post('/api/clientes', clienteData);
+    const response = await api.post('/clientes', clienteData);
     return response.data;
   },
   
   listarClientes: async (filtros = {}) => {
-    const response = await api.get('/api/clientes', { params: filtros });
+    const response = await api.get('/clientes', { params: filtros });
     return response.data;
   },
   
   obterCliente: async (id) => {
-    const response = await api.get(`/api/clientes/${id}`);
+    const response = await api.get(`/clientes/${id}`);
     return response.data;
   },
   
   confirmarCliente: async (id) => {
-    const response = await api.post(`/api/clientes/${id}/confirmar`);
+    const response = await api.post(`/clientes/${id}/confirmar`);
     return response.data;
   }
 };
@@ -134,22 +134,22 @@ export const clienteService = {
 // Funções de reclamações
 export const reclamacaoService = {
   cadastrarReclamacao: async (reclamacaoData) => {
-    const response = await api.post('/api/reclamacoes', reclamacaoData);
+    const response = await api.post('/reclamacoes', reclamacaoData);
     return response.data;
   },
   
   listarReclamacoes: async (filtros = {}) => {
-    const response = await api.get('/api/reclamacoes', { params: filtros });
+    const response = await api.get('/reclamacoes', { params: filtros });
     return response.data;
   },
   
   obterReclamacao: async (id) => {
-    const response = await api.get(`/api/reclamacoes/${id}`);
+    const response = await api.get(`/reclamacoes/${id}`);
     return response.data;
   },
   
   atualizarStatus: async (id, status) => {
-    const response = await api.put(`/api/reclamacoes/${id}/status`, { status });
+    const response = await api.put(`/reclamacoes/${id}/status`, { status });
     return response.data;
   }
 };
