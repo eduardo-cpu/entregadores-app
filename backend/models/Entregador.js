@@ -29,21 +29,35 @@ const EntregadorSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+}, {
+  // Definindo explicitamente o nome da coleção para evitar problemas de pluralização
+  collection: 'entregadores'
 });
 
 // Criptografar senha antes de salvar
 EntregadorSchema.pre('save', async function(next) {
-  if (!this.isModified('senha')) {
+  try {
+    if (!this.isModified('senha')) {
+      return next();
+    }
+    
+    const salt = await bcrypt.genSalt(10);
+    this.senha = await bcrypt.hash(this.senha, salt);
     next();
+  } catch (error) {
+    console.error('Erro ao criptografar senha:', error);
+    next(error);
   }
-  
-  const salt = await bcrypt.genSalt(10);
-  this.senha = await bcrypt.hash(this.senha, salt);
 });
 
 // Método para verificar senha
 EntregadorSchema.methods.matchSenha = async function(senhaInformada) {
-  return await bcrypt.compare(senhaInformada, this.senha);
+  try {
+    return await bcrypt.compare(senhaInformada, this.senha);
+  } catch (error) {
+    console.error('Erro ao verificar senha:', error);
+    throw error;
+  }
 };
 
 module.exports = mongoose.model('Entregador', EntregadorSchema);
